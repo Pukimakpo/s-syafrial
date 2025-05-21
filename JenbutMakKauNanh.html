@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Power Plans</title>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #60a5fa;
+      font-size: 36px;
+    }
+
+    p.subtitle {
+      margin-top: -10px;
+      font-size: 16px;
+      color: #cbd5e1;
+    }
+
+    p.tagline {
+      color: #38bdf8;
+      margin-bottom: 40px;
+    }
+
+    .plans {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .plan {
+      background-color: #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      width: 220px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      text-align: left;
+    }
+
+    .plan h2 {
+      font-size: 20px;
+      color: #7dd3fc;
+    }
+
+    .plan ul {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 20px 0;
+    }
+
+    .plan ul li {
+      margin: 8px 0;
+    }
+
+    .price {
+      font-size: 20px;
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    .old-price {
+      font-size: 14px;
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+
+    .subscribe {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .subscribe:hover {
+      background-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <h1>CHOOSE YOUR POWER PLAN</h1>
+  <p class="subtitle">All plans include Premium Access & API Access</p>
+  <p class="tagline">Save more. Get more. Perform better.</p>
+
+  <div class="plans">
+    <!-- Repeat this block for each plan -->
+    <div class="plan">
+      <h2>SPARK</h2>
+      <ul>
+        <li>1 concurrent</li>
+        <li>100 seconds</li>
+        <li>Premium Access</li>
+        <li>API Access</li>
+      </ul>
+      <div class="price">$12.00/month</div>
+      <div class="old-price">was $14.00</div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+
+    <div class="plan">
+      <h2>GLOW</h2>
+      <ul>
+        <li>2 concurrents</li>
+        <li>250 seconds</li>
+        <li>Premium Access</li>
+        <li>API Access</li>
+      </ul>
+      <div class="price">$24.00/month</div>
+      <div class="old-price">was $28.00</div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+
+    <div class="plan">
+      <h2>FLAME</h2>
+      <ul>
+        <li>3 concurrents</li>
+        <li>500 seconds</li>
+        <li>Premium Access</li>
+        <li>API Access</li>
+      </ul>
+      <div class="price">$36.00/month</div>
+      <div class="old-price">was $40.00</div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+
+    <div class="plan">
+      <h2>BURST</h2>
+      <ul>
+        <li>6 concurrents</li>
+        <li>1000 seconds</li>
+        <li>Premium Access</li>
+        <li>API Access</li>
+      </ul>
+      <div class="price">$72.00/month</div>
+      <div class="old-price">was $81.00</div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+
+    <div class="plan">
+      <h2>FURY</h2>
+      <ul>
+        <li>8 concurrents</li>
+        <li>2000 seconds</li>
+        <li>Premium Access</li>
+        <li>API Access</li>
+      </ul>
+      <div class="price">$89.00/month</div>
+      <div class="old-price">was $99.00</div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+
+    <div class="plan">
+      <h2>CORE</h2>
+      <ul>
+        <li>10 concurrents</li>
+        <li>3200 seconds</li>
+        <li>Premium Access</li>
+        <li>API Access</li>
+      </ul>
+      <div class="price">$115.00/month</div>
+      <div class="old-price">was $126.00</div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+
+    <div class="plan">
+      <h2>NOVA</h2>
+      <ul>
+        <li>20 concurrents</li>
+        <li>3800 seconds</li>
+        <li>Premium Access</li>
+        <li>API Access</li>
+      </ul>
+      <div class="price">$199.00/month</div>
+      <div class="old-price">was $225.00</div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+
+    <div class="plan">
+      <h2>TITAN</h2>
+      <ul>
+        <li>45 concurrents</li>
+        <li>7000 seconds</li>
+        <li>Premium Access</li>
+        <li>API Access</li>
+      </ul>
+      <div class="price">$450.00/month</div>
+      <div class="old-price">was $476.00</div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+  </div>
+</body>
+</html>
