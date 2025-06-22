@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>syafrial</title>
+  <link rel="icon" href="https://files.catbox.moe/4pn1j8.jpg" />
+  <style>
+    :root {
+      --bg1: #0f2027;
+      --bg2: #203a43;
+      --bg3: #2c5364;
+      --neon: #00ffe1;
+      --neon2: #ffeb3b;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', monospace;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .menu-btn, .neon-btn {
+      font-size: 18px;
+      background: transparent;
+      border: 2px solid var(--neon);
+      color: var(--neon);
+      border-radius: 10px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    .menu-btn:hover, .neon-btn:hover {
+      background: var(--neon);
+      color: #000;
+    }
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: #000000cc;
+      border: 1px solid var(--neon);
+      border-radius: 10px;
+      z-index: 10;
+    }
+    .dropdown a {
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: var(--neon);
+      border-bottom: 1px solid #333;
+    }
+    .dropdown a:hover {
+      background: #111;
+    }
+    .layer {
+      display: none;
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 30px;
+      background: rgba(0,0,0,0.75);
+      border-radius: 15px;
+      box-shadow: 0 0 12px var(--neon);
+      text-align: center;
+    }
+    .layer.active {
+      display: block;
+    }
+    canvas {
+      background: #111;
+      border: 3px solid var(--neon2);
+      display: block;
+      margin: 20px auto;
+    }
+    .control-dpad {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .control-dpad .row {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 5px 0;
+    }
+    .control-dpad button {
+      padding: 15px;
+      font-size: 20px;
+      background-color: #333;
+      color: #fff;
+      border: 2px solid var(--neon);
+      border-radius: 8px;
+    }
+    .control-dpad button:hover {
+      background-color: var(--neon2);
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+<audio id="bgm" src="https://files.catbox.moe/dgd3sz.mp3" loop></audio>
+<audio id="click" src="https://cdn.pixabay.com/audio/2021/08/04/audio_67e049898f.mp3"></audio>
+
+<button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
+<div id="menu" class="dropdown">
+  <a href="#" onclick="showLayer('layer1')">Telegram</a>
+  <a href="#" onclick="showLayer('layer2')">WhatsApp</a>
+  <a href="#" onclick="showLayer('layer3')">Snake</a>
+  <a href="#" onclick="showLayer('layer4')">Flappy</a>
+  <a href="#" onclick="showLayer('layer5')">Produk</a>
+</div>
+
+<div id="layer1" class="layer active">
+  <h1>Syafrial</h1>
+  <p>Kontak Telegram</p>
+  <a class="neon-btn" href="https://t.me/vpsnp"> tele utama</a>
+  <a class="neon-btn" href="https://t.me/sakoanjing"> kacung aku</a>
+  <br><br>
+  <button class="neon-btn" onclick="document.getElementById('bgm').play()">🔊 Play Musik</button>
+</div>
+
+<div id="layer2" class="layer">
+  <h2>WhatsApp</h2>
+  <a class="neon-btn" href="https://wa.me/6283800983605">Chat WA</a>
+</div>
+
+<div id="layer3" class="layer">
+  <h2>snake</h2>
+  <button class="neon-btn" onclick="startSnake()">Start Snake</button>
+  <canvas id="snakeCanvas" width="400" height="400"></canvas>
+  <div class="control-dpad">
+    <div class="row"><button onclick="snakeDirection='up'">⬆️</button></div>
+    <div class="row">
+      <button onclick="snakeDirection='left'">⬅️</button>
+      <span style="width: 40px;"></span>
+      <button onclick="snakeDirection='right'">➡️</button>
+    </div>
+    <div class="row"><button onclick="snakeDirection='down'">⬇️</button></div>
+  </div>
+</div>
+
+<div id="layer4" class="layer">
+  <h2>Bird</h2>
+  <button class="neon-btn" onclick="startFlappy()">Start Flappy</button>
+  <canvas id="flappyCanvas" width="400" height="400"></canvas>
+  <p id="score">Score: 0</p>
+</div>
+
+<div id="layer5" class="layer">
+  <h2>Produk</h2>
+  <ul>
+    <li>✔️ vps murah</li>
+    <li>✔️ Bot Telegram & WhatsApp</li>
+    <li>✔️ plans bbos </li>
+  </ul>
+</div>
+
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById("menu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  }
+
+  function showLayer(id) {
+    document.querySelectorAll('.layer').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    toggleMenu();
+    document.getElementById('click').play();
+  }
+
+  // SNAKE
+  const snakeCanvas = document.getElementById("snakeCanvas");
+  const sctx = snakeCanvas.getContext("2d");
+  const grid = 20;
+  let snake, apple, snakeDirection, snakeDead;
+
+  function startSnake() {
+    snake = [{ x: 160, y: 160 }];
+    apple = { x: 200, y: 200 };
+    snakeDirection = "right";
+    snakeDead = false;
+    runSnake();
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowUp" && snakeDirection !== "down") snakeDirection = "up";
+      else if (e.key === "ArrowDown" && snakeDirection !== "up") snakeDirection = "down";
+      else if (e.key === "ArrowLeft" && snakeDirection !== "right") snakeDirection = "left";
+      else if (e.key === "ArrowRight" && snakeDirection !== "left") snakeDirection = "right";
+    });
+  }
+
+  function runSnake() {
+    if (snakeDead) return;
+    setTimeout(() => {
+      requestAnimationFrame(runSnake);
+      let head = { ...snake[0] };
+      if (snakeDirection === "up") head.y -= grid;
+      else if (snakeDirection === "down") head.y += grid;
+      else if (snakeDirection === "left") head.x -= grid;
+      else if (snakeDirection === "right") head.x += grid;
+
+      if (
+        head.x < 0 || head.y < 0 ||
+        head.x >= snakeCanvas.width || head.y >= snakeCanvas.height ||
+        (snake.length > 3 && snake.some((s, i) => i > 0 && s.x === head.x && s.y === head.y))
+      ) {
+        alert("😹 game Over 😹");
+        snakeDead = true;
+        return;
+      }
+
+      snake.unshift(head);
+
+      if (head.x === apple.x && head.y === apple.y) {
+        apple = {
+          x: Math.floor(Math.random() * (snakeCanvas.width / grid)) * grid,
+          y: Math.floor(Math.random() * (snakeCanvas.height / grid)) * grid
+        };
+      } else {
+        snake.pop();
+      }
+
+      sctx.fillStyle = "#000";
+      sctx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+
+      sctx.fillStyle = "red";
+      sctx.fillRect(apple.x, apple.y, grid - 2, grid - 2);
+
+      sctx.fillStyle = "lime";
+      snake.forEach(p => sctx.fillRect(p.x, p.y, grid - 2, grid - 2));
+    }, 300);
+  }
+
+  const fc = document.getElementById("flappyCanvas");
+  const fctx = fc?.getContext("2d");
+  let y, v, pipes, score;
+
+  function startFlappy() {
+    y = 200; v = 0; pipes = []; score = 0;
+    flappyLoop();
+  }
+
+  function flappyLoop() {
+    fctx.fillStyle = "#000";
+    fctx.fillRect(0,0,fc.width,fc.height);
+    v += 0.3; y += v;
+
+    fctx.fillStyle = "yellow";
+    fctx.beginPath();
+    fctx.arc(80,y,10,0,Math.PI*2); fctx.fill();
+
+    if (!pipes.length || pipes[pipes.length-1].x < 250) {
+      let top = Math.random()*200+50;
+      pipes.push({x: 400, gap: top});
+    }
+
+    for (let i=0;i<pipes.length;i++) {
+      pipes[i].x -= 1;
+      fctx.fillStyle = "lime";
+      fctx.fillRect(pipes[i].x, 0, 40, pipes[i].gap - 80);
+      fctx.fillRect(pipes[i].x, pipes[i].gap + 80, 40, 400);
+      if (pipes[i].x === 80) score++;
+      if (80 > pipes[i].x && 80 < pipes[i].x+40 && (y < pipes[i].gap - 80 || y > pipes[i].gap + 80)) {
+        y = 200; v = 0; pipes = []; score = 0;
+      }
+    }
+
+    document.getElementById("score").innerText = "Score: " + score;
+    requestAnimationFrame(flappyLoop);
+  }
+
+  fc.addEventListener("click", () => v = -6);
+  document.addEventListener("keydown", e => {
+    if (e.key === ' ' || e.key === 'ArrowUp') v = -6;
+  });
+</script>
+
+</body>
+</html>
