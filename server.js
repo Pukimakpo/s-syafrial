@@ -19,6 +19,10 @@ app.post('/api/login', (req, res) => {
   const user = users.find(
     u => u.username === username && u.password === password
   );
+  
+app.get('/', (req, res) => {
+  res.send('Backend aktif 🚀');
+});
 
   if (!user) {
     return res.status(401).json({ message: 'Login gagal.' });
