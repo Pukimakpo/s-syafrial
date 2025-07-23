@@ -7,151 +7,116 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const USERS_FILE = "memek.json";
+const DB_PATH = "./users.json";
 
-function readUsers() {
-  try {
-    const data = fs.readFileSync(USERS_FILE, "utf8");
-    return JSON.parse(data);
-  } catch (err) {
-    console.error("Gagal membaca file:", err);
-    return [];
-  }
+// Helper: load & save users
+const loadUsers = () => JSON.parse(fs.readFileSync(DB_PATH));
+const saveUsers = (users) => fs.writeFileSync(DB_PATH, JSON.stringify(users, null, 2));
+
+// Helper: check if user is admin
+function isAdmin(user) {
+  return user && user.isAdmin === true;
 }
 
-function writeUsers(users) {
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-}
-
-// LOGIN
+// Login
 app.post("/api/login", (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const users = readUsers();
-    const user = users.find(u => u.username === username && u.password === password);
-
-    if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
-
-    const now = new Date();
-    const expiry = new Date(user.expiry);
-    if (expiry < now) return res.status(403).json({ success: false, message: "Account expired" });
-
+  const { username, password } = req.body;
+  const users = loadUsers();
+  const user = users.find(u => u.username === username && u.password === password);
+  if (user) {
     res.json({ success: true, user });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).send("Internal Server Error");
+  } else {
+    res.status(401).json({ success: false, message: "Invalid credentials" });
   }
 });
 
-// GET USERS (ADMIN ONLY)
-app.get("/api/users", (req, res) => {
-  const users = readUsers().map(u => {
-    const { password, ...rest } = u;
-    return rest;
-  });
-  res.json(users);
-});
-
-// ADD USER (ADMIN ONLY)
+// Sign Up / Add User
 app.post("/api/add-user", (req, res) => {
-  try {
-    const { username, password, conc, timeLimit, expiry, isAdmin } = req.body;
-    let users = readUsers();
+  const { username, password, days, conc, timeLimit } = req.body;
+  if (!username || !password) return res.status(400).json({ success: false, message: "Missing fields" });
 
-    if (users.some(u => u.username === username)) {
-      return res.status(400).json({ success: false, message: "Username already exists" });
-    }
-
-    users.push({
-      username,
-      password,
-      conc,
-      timeLimit,
-      expiry,
-      isAdmin,
-      history: []
-    });
-
-    writeUsers(users);
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Add user error:", err);
-    res.status(500).send("Internal Server Error");
+  const users = loadUsers();
+  if (users.find(u => u.username === username)) {
+    return res.status(409).json({ success: false, message: "User already exists" });
   }
+
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + (days || 7));
+
+  const newUser = {
+    username,
+    password,
+    isAdmin: false,
+    conc: conc || 1,
+    timeLimit: timeLimit || 60,
+    expiry: expiry.toISOString().split("T")[0],
+    history: []
+  };
+
+  users.push(newUser);
+  saveUsers(users);
+  res.json({ success: true, user: newUser });
 });
 
-// DELETE USER (ADMIN ONLY)
-app.post("/api/delete-user", (req, res) => {
-  try {
-    const { username } = req.body;
-    let users = readUsers();
-    users = users.filter(u => u.username !== username);
-    writeUsers(users);
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Delete user error:", err);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-// UPDATE USER (ADMIN ONLY)
+// Update User
 app.post("/api/update-user", (req, res) => {
-  try {
-    const { username, conc, timeLimit, expiry } = req.body;
-    let users = readUsers();
+  const { username, updateUsername, update } = req.body;
+  const users = loadUsers();
+  const admin = users.find(u => u.username === username);
+  const target = users.find(u => u.username === updateUsername);
 
-    const user = users.find(u => u.username === username);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+  if (!isAdmin(admin)) return res.status(403).json({ success: false, message: "Not authorized" });
+  if (!target) return res.status(404).json({ success: false, message: "User not found" });
 
-    user.conc = conc;
-    user.timeLimit = timeLimit;
-    user.expiry = expiry;
-
-    writeUsers(users);
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Update user error:", err);
-    res.status(500).send("Internal Server Error");
-  }
+  Object.assign(target, update);
+  saveUsers(users);
+  res.json({ success: true, user: target });
 });
 
-// GET HISTORY
-app.get("/api/history", (req, res) => {
-  const { username } = req.query;
-  const users = readUsers();
+// Delete User
+app.post("/api/delete-user", (req, res) => {
+  const { username, deleteUsername } = req.body;
+  let users = loadUsers();
+  const admin = users.find(u => u.username === username);
+
+  if (!isAdmin(admin)) return res.status(403).json({ success: false, message: "Not authorized" });
+
+  const before = users.length;
+  users = users.filter(u => u.username !== deleteUsername);
+  if (users.length === before) return res.status(404).json({ success: false, message: "User not found" });
+
+  saveUsers(users);
+  res.json({ success: true });
+});
+
+// Get Active User Count
+app.get("/api/active-users", (req, res) => {
+  const users = loadUsers();
+  const today = new Date().toISOString().split("T")[0];
+  const active = users.filter(u => u.expiry >= today);
+  res.json({ count: active.length });
+});
+
+// Dummy endpoint for attack (simulasi)
+app.post("/api/attack", (req, res) => {
+  const { username, target, method } = req.body;
+  if (!username || !target || !method) {
+    return res.status(400).json({ success: false, message: "Missing fields" });
+  }
+  const users = loadUsers();
   const user = users.find(u => u.username === username);
-  if (!user) return res.status(404).json({ success: false });
-  res.json(user.history || []);
-});
+  if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-// ADD TO HISTORY
-app.post("/api/history", (req, res) => {
-  try {
-    const { username, method, target, time } = req.body;
-    const users = readUsers();
-    const user = users.find(u => u.username === username);
-    if (!user) return res.status(404).json({ success: false });
+  user.history.push({
+    time: new Date().toISOString(),
+    target,
+    method
+  });
 
-    user.history = user.history || [];
-    user.history.push({
-      method,
-      target,
-      time,
-      timestamp: new Date().toISOString()
-    });
-
-    writeUsers(users);
-    res.json({ success: true });
-  } catch (err) {
-    console.error("History error:", err);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-app.get("/", (req, res) => {
-  res.send("Stresser Panel API by Syafrial 🚀");
+  saveUsers(users);
+  res.json({ success: true, message: "Attack simulated" });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server berjalan di port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
