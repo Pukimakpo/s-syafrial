@@ -6,13 +6,5 @@
     "timeLimit": 120,
     "expiry": "2099-12-31T00:00:00Z",
     "isAdmin": true
-  },
-  {
-    "username": "user",
-    "password": "user",
-    "conc": 10,
-    "timeLimit": 60,
-    "expiry": "2025-12-31T00:00:00Z",
-    "isAdmin": false
   }
 ]
