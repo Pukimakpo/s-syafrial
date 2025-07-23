@@ -7,116 +7,129 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const DB_PATH = "./users.json";
+const DB_FILE = "./users.json";
 
-// Helper: load & save users
-const loadUsers = () => JSON.parse(fs.readFileSync(DB_PATH));
-const saveUsers = (users) => fs.writeFileSync(DB_PATH, JSON.stringify(users, null, 2));
+// Utility
+const loadUsers = () => JSON.parse(fs.readFileSync(DB_FILE));
+const saveUsers = (users) => fs.writeFileSync(DB_FILE, JSON.stringify(users, null, 2));
+const getToday = () => new Date().toISOString().split("T")[0];
 
-// Helper: check if user is admin
-function isAdmin(user) {
-  return user && user.isAdmin === true;
-}
-
-// Login
+// 🔐 Login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   const users = loadUsers();
   const user = users.find(u => u.username === username && u.password === password);
-  if (user) {
-    res.json({ success: true, user });
-  } else {
-    res.status(401).json({ success: false, message: "Invalid credentials" });
-  }
+  if (!user) return res.status(401).json({ success: false });
+
+  const isActive = new Date(user.expiry) >= new Date();
+  res.json({ success: true, user: { ...user, isActive } });
 });
 
-// Sign Up / Add User
+// 🆕 Add User
 app.post("/api/add-user", (req, res) => {
-  const { username, password, days, conc, timeLimit } = req.body;
-  if (!username || !password) return res.status(400).json({ success: false, message: "Missing fields" });
-
+  const { username, password, days = 7, conc = 1, timeLimit = 60 } = req.body;
   const users = loadUsers();
-  if (users.find(u => u.username === username)) {
-    return res.status(409).json({ success: false, message: "User already exists" });
-  }
+
+  if (!username || !password) return res.status(400).json({ success: false, message: "Invalid input" });
+  if (users.some(u => u.username === username)) return res.status(409).json({ success: false, message: "Username already exists" });
 
   const expiry = new Date();
-  expiry.setDate(expiry.getDate() + (days || 7));
+  expiry.setDate(expiry.getDate() + Number(days));
 
   const newUser = {
     username,
     password,
     isAdmin: false,
-    conc: conc || 1,
-    timeLimit: timeLimit || 60,
+    conc,
+    timeLimit,
     expiry: expiry.toISOString().split("T")[0],
     history: []
   };
 
   users.push(newUser);
   saveUsers(users);
-  res.json({ success: true, user: newUser });
+  res.json({ success: true });
 });
 
-// Update User
-app.post("/api/update-user", (req, res) => {
-  const { username, updateUsername, update } = req.body;
-  const users = loadUsers();
-  const admin = users.find(u => u.username === username);
-  const target = users.find(u => u.username === updateUsername);
-
-  if (!isAdmin(admin)) return res.status(403).json({ success: false, message: "Not authorized" });
-  if (!target) return res.status(404).json({ success: false, message: "User not found" });
-
-  Object.assign(target, update);
-  saveUsers(users);
-  res.json({ success: true, user: target });
-});
-
-// Delete User
+// 🗑️ Delete User
 app.post("/api/delete-user", (req, res) => {
-  const { username, deleteUsername } = req.body;
+  const { username } = req.body;
   let users = loadUsers();
-  const admin = users.find(u => u.username === username);
+  const exists = users.find(u => u.username === username);
+  if (!exists) return res.status(404).json({ success: false });
 
-  if (!isAdmin(admin)) return res.status(403).json({ success: false, message: "Not authorized" });
-
-  const before = users.length;
-  users = users.filter(u => u.username !== deleteUsername);
-  if (users.length === before) return res.status(404).json({ success: false, message: "User not found" });
-
+  users = users.filter(u => u.username !== username);
   saveUsers(users);
   res.json({ success: true });
 });
 
-// Get Active User Count
+// ✏️ Update User (admin → true/false, conc, timeLimit, etc.)
+app.post("/api/update-user", (req, res) => {
+  const { username, update } = req.body;
+  const users = loadUsers();
+  const user = users.find(u => u.username === username);
+  if (!user) return res.status(404).json({ success: false });
+
+  Object.assign(user, update);
+  saveUsers(users);
+  res.json({ success: true });
+});
+
+// 📃 List Users
+app.get("/api/list-users", (req, res) => {
+  const users = loadUsers();
+  const data = users.map(u => ({
+    username: u.username,
+    expiry: u.expiry,
+    isAdmin: u.isAdmin,
+    conc: u.conc,
+    timeLimit: u.timeLimit
+  }));
+  res.json(data);
+});
+
+// 📊 History
+app.get("/api/history/:username", (req, res) => {
+  const { username } = req.params;
+  const users = loadUsers();
+  const user = users.find(u => u.username === username);
+  if (!user) return res.status(404).json({ success: false });
+
+  const history = user.history || [];
+  const today = getToday();
+  const last7 = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
+  const last30 = new Date(Date.now() - 30 * 86400000).toISOString().split("T")[0];
+
+  const daily = history.filter(h => h.date === today).length;
+  const weekly = history.filter(h => h.date >= last7).length;
+  const monthly = history.filter(h => h.date >= last30).length;
+
+  res.json({ daily, weekly, monthly });
+});
+
+// 🧠 Simulate Attack
+app.post("/api/attack", (req, res) => {
+  const { username, target, method } = req.body;
+  const users = loadUsers();
+  const user = users.find(u => u.username === username);
+  if (!user) return res.status(404).json({ success: false });
+
+  user.history = user.history || [];
+  user.history.push({ date: getToday(), target, method });
+  saveUsers(users);
+
+  res.json({ success: true });
+});
+
+// 📈 Active User Count
 app.get("/api/active-users", (req, res) => {
   const users = loadUsers();
-  const today = new Date().toISOString().split("T")[0];
+  const today = getToday();
   const active = users.filter(u => u.expiry >= today);
   res.json({ count: active.length });
 });
 
-// Dummy endpoint for attack (simulasi)
-app.post("/api/attack", (req, res) => {
-  const { username, target, method } = req.body;
-  if (!username || !target || !method) {
-    return res.status(400).json({ success: false, message: "Missing fields" });
-  }
-  const users = loadUsers();
-  const user = users.find(u => u.username === username);
-  if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-  user.history.push({
-    time: new Date().toISOString(),
-    target,
-    method
-  });
-
-  saveUsers(users);
-  res.json({ success: true, message: "Attack simulated" });
-});
-
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
