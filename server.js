@@ -7,129 +7,98 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const DB_FILE = "./users.json";
+const USERS_FILE = "./users.json";
 
-// Utility
-const loadUsers = () => JSON.parse(fs.readFileSync(DB_FILE));
-const saveUsers = (users) => fs.writeFileSync(DB_FILE, JSON.stringify(users, null, 2));
-const getToday = () => new Date().toISOString().split("T")[0];
+// Helper: Load users from file
+function loadUsers() {
+  try {
+    return JSON.parse(fs.readFileSync(USERS_FILE, "utf-8"));
+  } catch (e) {
+    return [];
+  }
+}
 
-// 🔐 Login
+// Helper: Save users to file
+function saveUsers(users) {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+}
+
+// Endpoint: Login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   const users = loadUsers();
   const user = users.find(u => u.username === username && u.password === password);
-  if (!user) return res.status(401).json({ success: false });
 
-  const isActive = new Date(user.expiry) >= new Date();
-  res.json({ success: true, user: { ...user, isActive } });
+  if (!user) return res.json({ success: false, message: "Invalid credentials" });
+
+  res.json({ success: true, user });
 });
 
-// 🆕 Add User
+// Endpoint: Add user (admin or signup)
 app.post("/api/add-user", (req, res) => {
-  const { username, password, days = 7, conc = 1, timeLimit = 60 } = req.body;
+  const { username, password, days, conc = 1, timeLimit = 60, isAdmin = false } = req.body;
   const users = loadUsers();
 
-  if (!username || !password) return res.status(400).json({ success: false, message: "Invalid input" });
-  if (users.some(u => u.username === username)) return res.status(409).json({ success: false, message: "Username already exists" });
+  if (users.some(u => u.username === username)) {
+    return res.json({ success: false, message: "Username already exists" });
+  }
 
-  const expiry = new Date();
-  expiry.setDate(expiry.getDate() + Number(days));
-
-  const newUser = {
-    username,
-    password,
-    isAdmin: false,
-    conc,
-    timeLimit,
-    expiry: expiry.toISOString().split("T")[0],
-    history: []
-  };
-
+  const expiry = new Date(Date.now() + (days * 24 * 60 * 60 * 1000)).toISOString().split("T")[0];
+  const newUser = { username, password, isAdmin, conc, timeLimit, expiry, history: [] };
   users.push(newUser);
   saveUsers(users);
+
   res.json({ success: true });
 });
 
-// 🗑️ Delete User
+// Endpoint: Delete user
 app.post("/api/delete-user", (req, res) => {
   const { username } = req.body;
   let users = loadUsers();
-  const exists = users.find(u => u.username === username);
-  if (!exists) return res.status(404).json({ success: false });
-
   users = users.filter(u => u.username !== username);
   saveUsers(users);
   res.json({ success: true });
 });
 
-// ✏️ Update User (admin → true/false, conc, timeLimit, etc.)
-app.post("/api/update-user", (req, res) => {
-  const { username, update } = req.body;
+// Endpoint: Get all users
+app.get("/api/users", (req, res) => {
+  const users = loadUsers();
+  res.json(users);
+});
+
+// Optional: Start attack simulation endpoint (log only)
+app.post("/api/start-attack", (req, res) => {
+  const { target, port, duration, layer, method, username } = req.body;
   const users = loadUsers();
   const user = users.find(u => u.username === username);
-  if (!user) return res.status(404).json({ success: false });
 
-  Object.assign(user, update);
+  if (!user) return res.json({ success: false, message: "User not found" });
+
+  const today = new Date().toISOString().split("T")[0];
+
+  // Log attack to history
+  if (!user.history) user.history = [];
+  user.history.push({ date: today, target, method });
+
   saveUsers(users);
   res.json({ success: true });
 });
 
-// 📃 List Users
-app.get("/api/list-users", (req, res) => {
-  const users = loadUsers();
-  const data = users.map(u => ({
-    username: u.username,
-    expiry: u.expiry,
-    isAdmin: u.isAdmin,
-    conc: u.conc,
-    timeLimit: u.timeLimit
-  }));
-  res.json(data);
-});
-
-// 📊 History
-app.get("/api/history/:username", (req, res) => {
+// Endpoint: Get user attack counts
+app.get("/api/attack-history/:username", (req, res) => {
   const { username } = req.params;
-  const users = loadUsers();
-  const user = users.find(u => u.username === username);
-  if (!user) return res.status(404).json({ success: false });
+  const user = loadUsers().find(u => u.username === username);
+  if (!user || !user.history) return res.json({ daily: 0, weekly: 0, monthly: 0 });
 
-  const history = user.history || [];
-  const today = getToday();
-  const last7 = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
-  const last30 = new Date(Date.now() - 30 * 86400000).toISOString().split("T")[0];
-
-  const daily = history.filter(h => h.date === today).length;
-  const weekly = history.filter(h => h.date >= last7).length;
-  const monthly = history.filter(h => h.date >= last30).length;
+  const now = new Date();
+  const daily = user.history.filter(h => h.date === now.toISOString().split("T")[0]).length;
+  const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+  const weekly = user.history.filter(h => new Date(h.date) > weekAgo).length;
+  const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+  const monthly = user.history.filter(h => new Date(h.date) > monthAgo).length;
 
   res.json({ daily, weekly, monthly });
 });
 
-// 🧠 Simulate Attack
-app.post("/api/attack", (req, res) => {
-  const { username, target, method } = req.body;
-  const users = loadUsers();
-  const user = users.find(u => u.username === username);
-  if (!user) return res.status(404).json({ success: false });
-
-  user.history = user.history || [];
-  user.history.push({ date: getToday(), target, method });
-  saveUsers(users);
-
-  res.json({ success: true });
-});
-
-// 📈 Active User Count
-app.get("/api/active-users", (req, res) => {
-  const users = loadUsers();
-  const today = getToday();
-  const active = users.filter(u => u.expiry >= today);
-  res.json({ count: active.length });
-});
-
 // Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
