@@ -20,7 +20,7 @@ app.post('/api/login', (req, res) => {
     u => u.username === username && u.password === password
   );
   
-app.get('/', (req, res) => {
+app.get('/testing', (req, res) => {
   res.send('Backend aktif 🚀');
 });
 
