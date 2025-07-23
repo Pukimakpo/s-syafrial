@@ -1,134 +1,130 @@
 const express = require('express');
 const fs = require('fs');
-const path = require('path');
-const bcrypt = require('bcryptjs');
 const cors = require('cors');
-
 const app = express();
-const DB_PATH = path.join(__dirname, 'memek.json');
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+const DB_FILE = './memek.json';
+
 app.use(cors());
 app.use(express.json());
 
-// Load database
-function loadDB() {
-  if (!fs.existsSync(DB_PATH)) {
-    const defaultDB = {
-      users: [
-        {
-          username: "admin",
-          password: bcrypt.hashSync("admin123", 10),
-          conc: 1000,
-          timeLimit: 300,
-          expiry: 4102444800000, // Expires in 2100
-          isAdmin: true,
-          history: []
-        }
-      ]
-    };
-    fs.writeFileSync(DB_PATH, JSON.stringify(defaultDB, null, 2));
-    return defaultDB;
-  }
-  return JSON.parse(fs.readFileSync(DB_PATH));
+// Fungsi bantu: baca database
+function readDB() {
+  const data = fs.readFileSync(DB_FILE);
+  return JSON.parse(data);
 }
 
-// Save to database
-function saveDB(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+// Fungsi bantu: tulis database
+function writeDB(data) {
+  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// Routes
-// Login
+// Fungsi bantu: cari user
+function findUser(username) {
+  const db = readDB();
+  return db.find(u => u.username === username);
+}
+
+// 🔐 Login
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  const db = loadDB();
-  const user = db.users.find(u => u.username === username);
+  const user = findUser(username);
 
-  if (!user) return res.status(401).json({ error: 'User not found' });
-  if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ error: 'Wrong password' });
-  if (user.expiry < Date.now()) return res.status(403).json({ error: 'Account expired' });
+  if (!user || user.password !== password) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
 
-  res.json({
-    username: user.username,
-    isAdmin: user.isAdmin,
-    conc: user.conc,
-    timeLimit: user.timeLimit,
-    expiry: user.expiry
-  });
+  const now = new Date();
+  const expiry = new Date(user.expiry);
+
+  if (now > expiry) {
+    return res.status(403).json({ error: 'Account expired' });
+  }
+
+  const { password: _, ...safeUser } = user;
+  res.json(safeUser);
 });
 
-// Add user (Admin only)
+// ➕ Add user (admin only)
 app.post('/api/add-user', (req, res) => {
-  const { adminUsername, username, password, conc, timeLimit, daysActive } = req.body;
-  const db = loadDB();
-  const admin = db.users.find(u => u.username === adminUsername && u.isAdmin);
+  const newUser = req.body;
+  const db = readDB();
 
-  if (!admin) return res.status(403).json({ error: 'Admin only' });
-  if (db.users.some(u => u.username === username)) return res.status(400).json({ error: 'Username exists' });
+  if (db.find(u => u.username === newUser.username)) {
+    return res.status(400).json({ error: 'User already exists' });
+  }
 
-  db.users.push({
-    username,
-    password: bcrypt.hashSync(password, 10),
-    conc: conc || 500,
-    timeLimit: timeLimit || 60,
-    expiry: Date.now() + (daysActive * 86400000),
-    isAdmin: false,
-    history: []
-  });
+  newUser.history = newUser.history || [];
+  db.push(newUser);
+  writeDB(db);
 
-  saveDB(db);
   res.json({ success: true });
 });
 
-// Delete user (Admin only)
+// ❌ Delete user (admin only)
 app.post('/api/delete-user', (req, res) => {
-  const { adminUsername, targetUsername } = req.body;
-  const db = loadDB();
-  const admin = db.users.find(u => u.username === adminUsername && u.isAdmin);
+  const { username } = req.body;
+  let db = readDB();
 
-  if (!admin) return res.status(403).json({ error: 'Admin only' });
-  if (targetUsername === 'admin') return res.status(400).json({ error: 'Cannot delete admin' });
+  db = db.filter(u => u.username !== username);
+  writeDB(db);
 
-  db.users = db.users.filter(u => u.username !== targetUsername);
-  saveDB(db);
   res.json({ success: true });
 });
 
-// Get all users (Admin only)
-app.get('/api/users', (req, res) => {
-  const { username } = req.query;
-  const db = loadDB();
-  const user = db.users.find(u => u.username === username && u.isAdmin);
-
-  if (!user) return res.status(403).json({ error: 'Admin only' });
-  res.json(db.users);
-});
-
-// Attack history
-app.post('/api/attack', (req, res) => {
-  const { username, target, method, duration } = req.body;
-  const db = loadDB();
-  const user = db.users.find(u => u.username === username);
+// ✏️ Update user (admin only)
+app.post('/api/update-user', (req, res) => {
+  const { username, ...updates } = req.body;
+  const db = readDB();
+  const user = db.find(u => u.username === username);
 
   if (!user) return res.status(404).json({ error: 'User not found' });
-  if (user.expiry < Date.now()) return res.status(403).json({ error: 'Account expired' });
-  if (duration > user.timeLimit) return res.status(400).json({ error: 'Exceeds time limit' });
 
-  user.history.push({
-    target,
-    method,
-    duration,
-    timestamp: Date.now()
-  });
+  Object.assign(user, updates);
+  writeDB(db);
 
-  saveDB(db);
   res.json({ success: true });
 });
 
-// Start server
+// 📋 Get all users (admin only)
+app.get('/api/users', (req, res) => {
+  const db = readDB();
+  const safeUsers = db.map(({ password, history, ...u }) => u);
+  res.json(safeUsers);
+});
+
+// 🕓 Attack history (GET for current user, POST to add)
+app.get('/api/history', (req, res) => {
+  const { username } = req.query;
+  const user = findUser(username);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  res.json(user.history || []);
+});
+
+app.post('/api/history', (req, res) => {
+  const { username, attack } = req.body;
+  const db = readDB();
+  const user = db.find(u => u.username === username);
+
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  user.history = user.history || [];
+  user.history.push({
+    ...attack,
+    time: new Date().toISOString()
+  });
+
+  writeDB(db);
+  res.json({ success: true });
+});
+
+// ✅ Tes server
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Admin credentials: admin:admin123`);
+  console.log(`Server berjalan di port ${PORT}`);
 });
