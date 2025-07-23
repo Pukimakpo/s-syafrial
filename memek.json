@@ -1,22 +1,11 @@
-{
-  "users": [
-    {
-      "username": "1",
-      "password": "$2a$10$XLOjTv8TpV7W5q5J2Kz4u.F6lZ7e6Q8Y9wR0dS1m2n3b4c5d6e7f8",
-      "conc": 1000,
-      "timeLimit": 300,
-      "expiry": 4102444800000,
-      "isAdmin": true,
-      "history": []
-    },
-    {
-      "username": "1123123123",
-      "password": "$2a$10$YLOjTv8TpV7W5q5J2Kz4u.F6lZ7e6Q8Y9wR0dS1m2n3b4c5d6e7f8",
-      "conc": 500,
-      "timeLimit": 60,
-      "expiry": 1735689600000, 
-      "isAdmin": false,
-      "history": []
-    }
-  ]
-}
+[
+  {
+    "username": "admin",
+    "password": "admin123",
+    "isAdmin": true,
+    "conc": 5,
+    "timeLimit": 60,
+    "expiry": "2025-12-31",
+    "history": []
+  }
+]
