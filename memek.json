@@ -1,8 +1,8 @@
 {
   "users": [
     {
-      "username": "admin",
-      "password": "$2a$10$XLOjTv8TpV7W5q5J2Kz4u.F6lZ7e6Q8Y9wR0dS1m2n3b4c5d6e7f8",
+      "username": "1",
+      "password": "syafrial",
       "conc": 1000,
       "timeLimit": 300,
       "expiry": 4102444800000,
@@ -10,8 +10,8 @@
       "history": []
     },
     {
-      "username": "user1",
-      "password": "$2a$10$YLOjTv8TpV7W5q5J2Kz4u.F6lZ7e6Q8Y9wR0dS1m2n3b4c5d6e7f8",
+      "username": "1123123123",
+      "password": "123",
       "conc": 500,
       "timeLimit": 60,
       "expiry": 1735689600000,
