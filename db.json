@@ -1,12 +1,18 @@
-{
-  "users": [
-    {
-      "username": "admin",
-      "password": "admin123",
-      "isAdmin": true,
-      "expires": 1893456000000,
-      "conc": 5,
-      "timeLimit": 120
-    }
-  ]
-}
+[
+  {
+    "username": "admin",
+    "password": "admin123",
+    "expiry": 1999999999999,
+    "conc": 10,
+    "timeLimit": 300,
+    "isAdmin": true
+  },
+  {
+    "username": "user1",
+    "password": "user123",
+    "expiry": 1999999999999,
+    "conc": 5,
+    "timeLimit": 120,
+    "isAdmin": false
+  }
+]
