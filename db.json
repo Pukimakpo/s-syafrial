@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "isAdmin": true,
+      "expires": 1893456000000,
+      "conc": 5,
+      "timeLimit": 120
+    }
+  ]
+}
