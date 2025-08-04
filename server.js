@@ -1,223 +1,126 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const cors = require('cors');
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const USERS_FILE = path.join(__dirname, 'users.json');
+// =======================
+// Dummy Data (in-memory)
+// =======================
+let users = [{ id: 1, username: 'admin', password: 'admin123', plan: 'VIP', attacksUsed: 0 }];
+let plans = [
+  { id: 1, name: 'VIP', duration: '300s', concurrents: 3, price: 'Rp200.000' },
+  { id: 2, name: 'PRO', duration: '150s', concurrents: 2, price: 'Rp100.000' }
+];
+let tickets = [];
+let attacks = [];
+let tools = [{ id: 1, name: 'Layer7 Bypass' }];
+let systemLoad = { cpu: '20%', ram: '40%' };
+let news = [{ id: 1, title: 'Welcome!', content: 'System is now live.' }];
 
-// Initialize users file with admin if it doesn't exist
-if (!fs.existsSync(USERS_FILE)) {
-  const defaultUsers = [{
-    username: 'admin',
-    password: 'admin123',
-    expiry: Date.now() + (365 * 24 * 60 * 60 * 1000), // 1 year
-    conc: 9999, // Unlimited for admin
-    timeLimit: 999999, // Unlimited for admin
-    isAdmin: true,
-    createdAt: Date.now(),
-    lastActivity: Date.now()
-  }];
-  fs.writeFileSync(USERS_FILE, JSON.stringify(defaultUsers, null, 2));
-}
-
-// Helper functions
-function readUsers() {
-  const data = fs.readFileSync(USERS_FILE);
-  return JSON.parse(data);
-}
-
-function writeUsers(users) {
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-}
-
-function calculateDaysLeft(expiry) {
-  return Math.ceil((expiry - Date.now()) / (1000 * 60 * 60 * 24));
-}
-
-// API Endpoints
+// ===============
+// Auth Endpoints
+// ===============
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  const users = readUsers();
   const user = users.find(u => u.username === username && u.password === password);
-  
-  if (user) {
-    user.lastActivity = Date.now();
-    writeUsers(users);
-    
-    const userResponse = {
-      ...user,
-      daysLeft: calculateDaysLeft(user.expiry),
-      isExpired: user.expiry < Date.now()
-    };
-    
-    res.json({ 
-      success: true, 
-      user: userResponse 
-    });
-  } else {
-    res.json({ 
-      success: false, 
-      message: "Invalid username or password" 
-    });
-  }
+  if (!user) return res.status(401).json({ message: 'Login gagal.' });
+  res.json({ success: true, message: 'Login berhasil.', userId: user.id });
 });
 
-app.post('/api/add-user', (req, res) => {
-  const { username, password, days = 3, conc = 1, timeLimit = 30 } = req.body;
-  const users = readUsers();
-  
+app.post('/api/signup', (req, res) => {
+  const { username, password } = req.body;
   if (users.find(u => u.username === username)) {
-    return res.json({ 
-      success: false, 
-      message: "Username already exists" 
-    });
+    return res.status(409).json({ message: 'Username sudah dipakai.' });
   }
-
-  const newUser = {
-    username,
-    password,
-    expiry: Date.now() + (days * 24 * 60 * 60 * 1000),
-    conc,
-    timeLimit,
-    isAdmin: false,
-    createdAt: Date.now(),
-    lastActivity: Date.now(),
-    totalAttacks: 0
-  };
-
+  const newUser = { id: users.length + 1, username, password, plan: 'FREE', attacksUsed: 0 };
   users.push(newUser);
-  writeUsers(users);
-  
-  res.json({ 
-    success: true,
-    user: {
-      ...newUser,
-      daysLeft: days
-    }
+  res.status(201).json({ message: 'Pendaftaran berhasil.', userId: newUser.id });
+});
+
+app.post('/api/user/logout', (req, res) => {
+  res.json({ message: 'Logout berhasil.' });
+});
+
+// ===============
+// User Endpoints
+// ===============
+app.get('/api/user/info', (req, res) => {
+  const user = users[0]; // Demo pakai user pertama
+  res.json({ username: user.username, plan: user.plan });
+});
+
+app.get('/api/user/stats', (req, res) => {
+  const user = users[0];
+  res.json({ attacksUsed: user.attacksUsed, plan: user.plan });
+});
+
+// ===============
+// Attack Endpoints
+// ===============
+app.post('/api/attack/send', (req, res) => {
+  const { host, port, method, time } = req.body;
+  if (!host || !port || !method || !time) {
+    return res.status(400).json({ message: 'Data tidak lengkap.' });
+  }
+  attacks.push({ host, port, method, time, date: new Date().toISOString() });
+  users[0].attacksUsed++;
+  res.json({ message: 'Attack sent!' });
+});
+
+app.get('/api/attack/history', (req, res) => {
+  res.json(attacks);
+});
+
+app.post('/api/attack/stop', (req, res) => {
+  const { host } = req.body;
+  // simulasi stop
+  res.json({ message: `Attack to ${host} stopped.` });
+});
+
+// ===============
+// Admin / Info
+// ===============
+app.get('/api/admin/stats', (req, res) => {
+  res.json({
+    totalUsers: users.length,
+    totalAttacks: attacks.length
   });
 });
 
-app.post('/api/delete-user', (req, res) => {
-  const { username } = req.body;
-  let users = readUsers();
-  
-  if (username === 'admin') {
-    return res.json({ 
-      success: false, 
-      message: "Cannot delete admin account" 
-    });
-  }
-
-  const initialLength = users.length;
-  users = users.filter(u => u.username !== username);
-  
-  if (users.length === initialLength) {
-    return res.json({ 
-      success: false, 
-      message: "User not found" 
-    });
-  }
-
-  writeUsers(users);
-  res.json({ success: true });
+app.get('/api/system/load', (req, res) => {
+  res.json(systemLoad);
 });
 
-app.post('/api/make-admin', (req, res) => {
-  const { username, action = 'promote' } = req.body;
-  const users = readUsers();
-  const user = users.find(u => u.username === username);
-  
-  if (!user) {
-    return res.json({ 
-      success: false, 
-      message: "User not found" 
-    });
-  }
-
-  if (action === 'promote') {
-    user.isAdmin = true;
-  } else if (action === 'demote') {
-    if (username === 'admin') {
-      return res.json({ 
-        success: false, 
-        message: "Cannot demote main admin" 
-      });
-    }
-    user.isAdmin = false;
-  }
-
-  writeUsers(users);
-  res.json({ success: true });
+// ===============
+// Others
+// ===============
+app.get('/api/plans/all', (req, res) => {
+  res.json(plans);
 });
 
-app.get('/api/users', (req, res) => {
-  const users = readUsers();
-  const now = Date.now();
-  
-  const userList = users.map(u => ({
-    username: u.username,
-    isAdmin: u.isAdmin,
-    expiryDate: new Date(u.expiry).toLocaleDateString(),
-    daysLeft: calculateDaysLeft(u.expiry),
-    conc: u.conc,
-    timeLimit: u.timeLimit,
-    isExpired: u.expiry < now,
-    createdAt: new Date(u.createdAt).toLocaleDateString()
-  }));
-
-  res.json(userList);
+app.get('/api/news/all', (req, res) => {
+  res.json(news);
 });
 
-app.post('/api/track-attack', (req, res) => {
-  const { username } = req.body;
-  const users = readUsers();
-  const user = users.find(u => u.username === username);
-  
-  if (user) {
-    user.totalAttacks = (user.totalAttacks || 0) + 1;
-    user.lastActivity = Date.now();
-    user.lastAction = 'Attack started';
-    writeUsers(users);
-    res.json({ success: true });
-  } else {
-    res.json({ success: false });
-  }
+app.get('/api/tools/all', (req, res) => {
+  res.json(tools);
 });
 
-app.get('/api/active-users', (req, res) => {
-  const users = readUsers();
-  const now = Date.now();
-  
-  // Get active users (last 30 minutes)
-  const activeUsers = users
-    .filter(u => u.lastActivity > now - 15*60*1000) // active in last 15 mins
-    .sort((a, b) => b.isAdmin - a.isAdmin || b.lastActivity - a.lastActivity) // Admins first
-    .slice(0, 10) // limit to 10 most recent
-    .map(u => ({
-      username: u.username,
-      isAdmin: u.isAdmin,
-      lastAction: u.lastAction || "Using panel",
-      time: Math.round((now - u.lastActivity)/60000) + " mins ago"
-    }));
-  
-  // If no real active users, return some mock data
-  if (activeUsers.length === 0) {
-    activeUsers.push(
-      { username: "admin", isAdmin: true, lastAction: "Managing users", time: "2 mins ago" },
-      { username: "user1", isAdmin: false, lastAction: "Attack started", time: "5 mins ago" }
-    );
-  }
-  
-  res.json(activeUsers);
+app.get('/api/tickets', (req, res) => {
+  res.json(tickets);
 });
 
-// Start server
+app.post('/api/tickets', (req, res) => {
+  const { title, message } = req.body;
+  tickets.push({ id: tickets.length + 1, title, message, date: new Date() });
+  res.json({ message: 'Tiket dikirim.' });
+});
+
+// ========================
+// Start Server
+// ========================
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Admin credentials: admin / admin123`);
+  console.log(`✅ API Jalan di http://localhost:${PORT}`);
 });
