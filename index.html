@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kangennn diaaa woiii</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #ffffff;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 5rem 0;
+        }
+
+        /* Header & Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav {
+            height: 4.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav__logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3436;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav__list {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav__link {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            color: #636e72;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav__link:hover,
+        .nav__link.active-link {
+            color: #2d3436;
+        }
+
+        .nav__link.active-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #2d3436;
+            border-radius: 2px;
+        }
+
+        /* Hero Section */
+        .home {
+            padding-top: 8rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .home__content {
+            max-width: 700px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .home__title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #2d3436;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s ease forwards;
+        }
+
+        .home__subtitle {
+            font-size: 1.5rem;
+            color: #636e72;
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s ease 0.2s forwards;
+        }
+
+        .home__description {
+            font-size: 1.1rem;
+            color: #636e72;
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            line-height: 1.8;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s ease 0.4s forwards;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Button */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: #2d3436;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #2d3436;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: transparent;
+            color: #2d3436;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(45, 52, 54, 0.1);
+        }
+
+        /* Skills Section */
+        .skills__container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .section__title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 1rem;
+        }
+
+        .section__subtitle {
+            font-size: 1.1rem;
+            color: #636e72;
+            margin-bottom: 3rem;
+            max-width: 600px;
+        }
+
+        .skills__content {
+            background: #f8f9fa;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+        }
+
+        .skills__data {
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: 1fr max-content 1fr;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .skills__names {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .skills__icon {
+            font-size: 1.8rem;
+            color: #2d3436;
+        }
+
+        .skills__name {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .skills__bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skills__bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: var(--width);
+            background: #2d3436;
+            border-radius: 3px;
+            animation: fillBar 1.5s ease-out forwards;
+        }
+
+        .skills__html::after { --width: 95%; }
+        .skills__css::after { --width: 85%; }
+        .skills__js::after { --width: 65%; }
+        .skills__ux::after { --width: 85%; }
+        .skills__sleep::after { --width: 90%; }
+
+        .skills__percentage {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: #2d3436;
+            justify-self: end;
+        }
+
+        @keyframes fillBar {
+            from { width: 0; }
+        }
+
+        /* Game Section */
+        .game-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-section .section__title {
+            color: white;
+        }
+
+        .game-section .section__subtitle {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .game-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .game-tab {
+            padding: 0.8rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        .game-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .game-tab.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .game-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            min-height: 400px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Snake Game */
+        .game-wrapper {
+            display: none;
+        }
+
+        .game-wrapper.active {
+            display: block;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .game-score {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .game-btn {
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .game-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .game-board {
+            width: 100%;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #snakeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Dino Game */
+        #dinoCanvas {
+            width: 100%;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: block;
+        }
+
+        /* Memory Game */
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            perspective: 1000px;
+        }
+
+        .memory-card {
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            cursor: pointer;
+        }
+
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.matched {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .memory-front,
+        .memory-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            border-radius: 10px;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .memory-front {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotateY(180deg);
+        }
+
+        .memory-back {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* About Section */
+        .about__container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about__img {
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+            margin: 0 auto;
+        }
+
+        .about__img-placeholder {
+            font-size: 5rem;
+            color: #e0e0e0;
+        }
+
+        .about__description {
+            font-size: 1.1rem;
+            color: #636e72;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Portfolio Section */
+        .portfolio__container {
+            max-width: 1200px;
+        }
+
+        .portfolio__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .portfolio__item {
+            background: #f8f9fa;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .portfolio__item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        .portfolio__img {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .portfolio__img-placeholder {
+            font-size: 3rem;
+            color: #a0a0a0;
+        }
+
+        .portfolio__content {
+            padding: 2rem;
+        }
+
+        .portfolio__title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 1rem;
+        }
+
+        .portfolio__description {
+            font-size: 1rem;
+            color: #636e72;
+            line-height: 1.6;
+        }
+
+        /* Contact Section */
+        .contact__container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact__form {
+            margin-top: 3rem;
+        }
+
+        .form__group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form__input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f8f9fa;
+            transition: border-color 0.3s ease;
+        }
+
+        .form__input:focus {
+            outline: none;
+            border-color: #2d3436;
+        }
+
+        .form__textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Footer */
+        .footer {
+            background: #f8f9fa;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer__social {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer__social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #2d3436;
+            color: white;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer__social-link:hover {
+            background: #636e72;
+            transform: translateY(-3px);
+        }
+
+        .footer__copy {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .home__title {
+                font-size: 2.5rem;
+            }
+            
+            .home__subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section__title {
+                font-size: 2rem;
+            }
+            
+            .nav__list {
+                display: none;
+            }
+            
+            .skills__data {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .skills__percentage {
+                justify-self: start;
+                margin-left: 2.5rem;
+            }
+
+            .memory-game {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Mobile Menu */
+        .nav__toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2d3436;
+        }
+
+        @media (max-width: 768px) {
+            .nav__toggle {
+                display: block;
+            }
+            
+            .nav__menu {
+                position: fixed;
+                top: 4.5rem;
+                left: -100%;
+                width: 100%;
+                background: white;
+                padding: 2rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                transition: left 0.3s ease;
+            }
+            
+            .nav__menu.active {
+                left: 0;
+            }
+            
+            .nav__list {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="#" class="nav__logo">SYAFRIAL</a>
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a href="#home" class="nav__link active-link">Home</a></li>
+                    <li class="nav__item"><a href="#about" class="nav__link">About</a></li>
+                    <li class="nav__item"><a href="#skills" class="nav__link">Skills</a></li>
+                    <li class="nav__item"><a href="#games" class="nav__link">Games</a></li>
+                    <li class="nav__item"><a href="#portfolio" class="nav__link">Portfolio</a></li>
+                    <li class="nav__item"><a href="#contact" class="nav__link">Contact</a></li>
+                </ul>
+            </div>
+            <div class="nav__toggle" id="nav-toggle">
+                <i class='bx bx-menu'></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Home Section -->
+    <section class="home" id="home">
+        <div class="home__container container">
+            <div class="home__content">
+                <h1 class="home__title">Hi, I'm Syafrial</h1>
+                <h2 class="home__subtitle">Frontend Developer & Game Enthusiast</h2>
+                <p class="home__description">
+                    Saya seorang developer dengan passion dalam menciptakan pengalaman digital yang menarik dan fungsional. 
+                    Suka coding, desain, dan tentu saja... main game! 🎮
+                </p>
+                <a href="#games" class="button">
+                    Coba Game Saya
+                    <i class='bx bx-game'></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about section" id="about">
+        <div class="about__container container">
+            <div class="about__img">
+                <div class="about__img-placeholder">
+                    <i class='bx bx-user'></i>
+                </div>
+            </div>
+            <div class="about__data">
+                <h2 class="section__title">Tentang Saya</h2>
+                <p class="about__description">
+                    Seorang profesional di bidang pengembangan web dengan pengalaman lebih dari 3 tahun. 
+                    Saya memiliki keahlian dalam membuat antarmuka yang responsif, intuitif, dan visual menarik.
+                </p>
+                <p class="about__description">
+                    Selain coding, saya juga aktif membuat mini-games untuk mengasah logika pemrograman 
+                    dan memberikan pengalaman interaktif yang menyenangkan.
+                </p>
+                <a href="#games" class="button">Main Game Yuk!</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills section" id="skills">
+        <div class="container">
+            <h2 class="section__title">Skills</h2>
+            <p class="section__subtitle">Kemampuan teknis dan profesional yang terus saya kembangkan</p>
+            
+            <div class="skills__content">
+                <div class="skills__data">
+                    <div class="skills__names">
+                        <i class='bx bxl-html5 skills__icon'></i>
+                        <span class="skills__name">HTML5</span>
+                    </div>
+                    <div class="skills__bar skills__html"></div>
+                    <div>
+                        <span class="skills__percentage">95%</span>
+                    </div>
+                </div>
+                <div class="skills__data">
+                    <div class="skills__names">
+                        <i class='bx bxl-css3 skills__icon'></i>
+                        <span class="skills__name">CSS3</span>
+                    </div>
+                    <div class="skills__bar skills__css"></div>
+                    <div>
+                        <span class="skills__percentage">85%</span>
+                    </div>
+                </div>
+                <div class="skills__data">
+                    <div class="skills__names">
+                        <i class='bx bxl-javascript skills__icon'></i>
+                        <span class="skills__name">JAVASCRIPT</span>
+                    </div>
+                    <div class="skills__bar skills__js"></div>
+                    <div>
+                        <span class="skills__percentage">65%</span>
+                    </div>
+                </div>
+                <div class="skills__data">
+                    <div class="skills__names">
+                        <i class='bx bxs-paint skills__icon'></i>
+                        <span class="skills__name">UX/UI</span>
+                    </div>
+                    <div class="skills__bar skills__ux"></div>
+                    <div>
+                        <span class="skills__percentage">85%</span>
+                    </div>
+                </div>
+                <div class="skills__data">
+                    <div class="skills__names">
+                        <i class='bx bx-bed skills__icon'></i>
+                        <span class="skills__name">TIDUR</span>
+                    </div>
+                    <div class="skills__bar skills__sleep"></div>
+                    <div>
+                        <span class="skills__percentage">90%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Game Section -->
+    <section class="game-section section" id="games">
+        <div class="container">
+            <h2 class="section__title">Mini Games</h2>
+            <p class="section__subtitle">Coba game-game sederhana yang saya buat untuk mengisi waktu luang</p>
+            
+            <div class="game-container">
+                <div class="game-tabs">
+                    <button class="game-tab active" data-game="snake">🐍 Snake Game</button>
+                    <button class="game-tab" data-game="dino">🦖 Dino Runner</button>
+                    <button class="game-tab" data-game="memory">🧠 Memory Game</button>
+                </div>
+                
+                <div class="game-content">
+                    <!-- Snake Game -->
+                    <div class="game-wrapper active" id="snakeGame">
+                        <div class="game-header">
+                            <div class="game-score">Score: <span id="snakeScore">0</span></div>
+                            <div class="game-controls">
+                                <button class="game-btn" id="startSnake">Start</button>
+                                <button class="game-btn" id="pauseSnake">Pause</button>
+                                <button class="game-btn" id="resetSnake">Reset</button>
+                            </div>
+                        </div>
+                        <div class="game-board">
+                            <canvas id="snakeCanvas"></canvas>
+                        </div>
+                        <div style="margin-top: 1rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+                            Gunakan arrow keys untuk menggerakkan ular. Makan makanan merah untuk menambah skor!
+                        </div>
+                    </div>
+                    
+                    <!-- Dino Game -->
+                    <div class="game-wrapper" id="dinoGame">
+                        <div class="game-header">
+                            <div class="game-score">Score: <span id="dinoScore">0</span></div>
+                            <div class="game-controls">
+                                <button class="game-btn" id="startDino">Start</button>
+                                <button class="game-btn" id="resetDino">Reset</button>
+                            </div>
+                        </div>
+                        <canvas id="dinoCanvas"></canvas>
+                        <div style="margin-top: 1rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+                            Tekan SPACE untuk melompati rintangan!
+                        </div>
+                    </div>
+                    
+                    <!-- Memory Game -->
+                    <div class="game-wrapper" id="memoryGame">
+                        <div class="game-header">
+                            <div class="game-score">Moves: <span id="movesCount">0</span></div>
+                            <div class="game-controls">
+                                <button class="game-btn" id="startMemory">Start</button>
+                                <button class="game-btn" id="resetMemory">Reset</button>
+                            </div>
+                        </div>
+                        <div class="memory-game" id="memoryBoard"></div>
+                        <div style="margin-top: 1rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+                            Temukan pasangan kartu yang sama dengan jumlah gerakan sesedikit mungkin!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio section" id="portfolio">
+        <div class="portfolio__container container">
+            <h2 class="section__title">Portfolio</h2>
+            <p class="section__subtitle">Proyek-proyek terbaru yang telah saya kerjakan</p>
+            
+            <div class="portfolio__grid">
+                <div class="portfolio__item">
+                    <div class="portfolio__img">
+                        <div class="portfolio__img-placeholder">
+                            <i class='bx bx-laptop'></i>
+                        </div>
+                    </div>
+                    <div class="portfolio__content">
+                        <h3 class="portfolio__title">E-Commerce Website</h3>
+                        <p class="portfolio__description">
+                            Platform e-commerce dengan UI modern, responsive design, dan integrasi payment gateway.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="portfolio__item">
+                    <div class="portfolio__img">
+                        <div class="portfolio__img-placeholder">
+                            <i class='bx bx-game'></i>
+                        </div>
+                    </div>
+                    <div class="portfolio__content">
+                        <h3 class="portfolio__title">Mini Games Collection</h3>
+                        <p class="portfolio__description">
+                            Koleksi mini-games interaktif menggunakan HTML5 Canvas dan JavaScript murni.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="portfolio__item">
+                    <div class="portfolio__img">
+                        <div class="portfolio__img-placeholder">
+                            <i class='bx bx-chart'></i>
+                        </div>
+                    </div>
+                    <div class="portfolio__content">
+                        <h3 class="portfolio__title">Dashboard Analytics</h3>
+                        <p class="portfolio__description">
+                            Dashboard dengan visualisasi data real-time menggunakan React dan Chart.js.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact section" id="contact">
+        <div class="contact__container container">
+            <h2 class="section__title">Hubungi Saya</h2>
+            <p class="section__subtitle">Tertarik bekerja sama atau mau diskusi tentang game development?</p>
+            
+            <form class="contact__form">
+                <div class="form__group">
+                    <input type="text" class="form__input" placeholder="Nama Anda" required>
+                </div>
+                <div class="form__group">
+                    <input type="email" class="form__input" placeholder="Email Anda" required>
+                </div>
+                <div class="form__group">
+                    <textarea class="form__input form__textarea" placeholder="Pesan Anda" required></textarea>
+                </div>
+                <button type="submit" class="button">
+                    Kirim Pesan
+                    <i class='bx bx-send'></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__social">
+                <a href="#" class="footer__social-link">
+                    <i class='bx bxl-linkedin'></i>
+                </a>
+                <a href="#" class="footer__social-link">
+                    <i class='bx bxl-github'></i>
+                </a>
+                <a href="#" class="footer__social-link">
+                    <i class='bx bxl-instagram'></i>
+                </a>
+                <a href="#" class="footer__social-link">
+                    <i class='bx bxl-twitter'></i>
+                </a>
+            </div>
+            <p class="footer__copy">© 2024 Syafrial. Let's play and code! 🎮👨‍💻</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const navMenu = document.getElementById('nav-menu');
+        const navToggle = document.getElementById('nav-toggle');
+        
+        if(navToggle) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        }
+        
+        // Close mobile menu when clicking on nav links
+        const navLinks = document.querySelectorAll('.nav__link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+        
+        // Active link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        
+        function scrollActive() {
+            const scrollY = window.pageYOffset;
+            
+            sections.forEach(section => {
+                const sectionHeight = section.offsetHeight;
+                const sectionTop = section.offsetTop - 100;
+                const sectionId = section.getAttribute('id');
+                const navLink = document.querySelector(`.nav__link[href*=${sectionId}]`);
+                
+                if(scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    navLink.classList.add('active-link');
+                } else {
+                    navLink.classList.remove('active-link');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', scrollActive);
+        
+        // Form submission
+        const contactForm = document.querySelector('.contact__form');
+        if(contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Terima kasih! Pesan Anda telah dikirim. Saya akan membalas segera.');
+                contactForm.reset();
+            });
+        }
+
+        // Game Tabs
+        const gameTabs = document.querySelectorAll('.game-tab');
+        const gameWrappers = document.querySelectorAll('.game-wrapper');
+        
+        gameTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const gameId = tab.getAttribute('data-game');
+                
+                // Update active tab
+                gameTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show active game
+                gameWrappers.forEach(wrapper => {
+                    wrapper.classList.remove('active');
+                    if (wrapper.id === `${gameId}Game`) {
+                        wrapper.classList.add('active');
+                    }
+                });
+                
+                // Initialize game based on type
+                switch(gameId) {
+                    case 'snake':
+                        initSnakeGame();
+                        break;
+                    case 'dino':
+                        initDinoGame();
+                        break;
+                    case 'memory':
+                        initMemoryGame();
+                        break;
+                }
+            });
+        });
+
+        // Snake Game
+        let snakeGame, snakeCtx, snake, food, direction, gameRunning, score;
+        const gridSize = 20;
+        
+        function initSnakeGame() {
+            const canvas = document.getElementById('snakeCanvas');
+            snakeCtx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            resetSnakeGame();
+            
+            // Event listeners for buttons
+            document.getElementById('startSnake').addEventListener('click', startSnakeGame);
+            document.getElementById('pauseSnake').addEventListener('click', pauseSnakeGame);
+            document.getElementById('resetSnake').addEventListener('click', resetSnakeGame);
+            
+            // Keyboard controls
+            document.addEventListener('keydown', changeDirection);
+        }
+        
+        function startSnakeGame() {
+            if (!gameRunning) {
+                gameRunning = true;
+                gameLoop();
+            }
+        }
+        
+        function pauseSnakeGame() {
+            gameRunning = !gameRunning;
+            if (gameRunning) {
+                gameLoop();
+            }
+        }
+        
+        function resetSnakeGame() {
+            snake = [{x: 10, y: 10}];
+            direction = {x: 0, y: 0};
+            food = {x: 15, y: 15};
+            score = 0;
+            gameRunning = false;
+            document.getElementById('snakeScore').textContent = score;
+            draw();
+        }
+        
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            update();
+            draw();
+            setTimeout(gameLoop, 100);
+        }
+        
+        function update() {
+            // Move snake
+            const head = {x: snake[0].x + direction.x, y: snake[0].y + direction.y};
+            
+            // Check wall collision
+            if (head.x < 0 || head.x >= snakeCtx.canvas.width / gridSize || 
+                head.y < 0 || head.y >= snakeCtx.canvas.height / gridSize) {
+                resetSnakeGame();
+                return;
+            }
+            
+            // Check self collision
+            for (let segment of snake) {
+                if (head.x === segment.x && head.y === segment.y) {
+                    resetSnakeGame();
+                    return;
+                }
+            }
+            
+            snake.unshift(head);
+            
+            // Check food collision
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                document.getElementById('snakeScore').textContent = score;
+                generateFood();
+            } else {
+                snake.pop();
+            }
+        }
+        
+        function draw() {
+            // Clear canvas
+            snakeCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            snakeCtx.fillRect(0, 0, snakeCtx.canvas.width, snakeCtx.canvas.height);
+            
+            // Draw snake
+            snakeCtx.fillStyle = '#4CAF50';
+            for (let segment of snake) {
+                snakeCtx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+            }
+            
+            // Draw food
+            snakeCtx.fillStyle = '#FF5252';
+            snakeCtx.beginPath();
+            snakeCtx.arc(
+                food.x * gridSize + gridSize / 2,
+                food.y * gridSize + gridSize / 2,
+                gridSize / 2 - 2,
+                0,
+                Math.PI * 2
+            );
+            snakeCtx.fill();
+        }
+        
+        function generateFood() {
+            food = {
+                x: Math.floor(Math.random() * (snakeCtx.canvas.width / gridSize)),
+                y: Math.floor(Math.random() * (snakeCtx.canvas.height / gridSize))
+            };
+            
+            // Make sure food doesn't appear on snake
+            for (let segment of snake) {
+                if (food.x === segment.x && food.y === segment.y) {
+                    generateFood();
+                    break;
+                }
+            }
+        }
+        
+        function changeDirection(e) {
+            if (!gameRunning) return;
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                    if (direction.y === 0) {
+                        direction = {x: 0, y: -1};
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (direction.y === 0) {
+                        direction = {x: 0, y: 1};
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (direction.x === 0) {
+                        direction = {x: -1, y: 0};
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (direction.x === 0) {
+                        direction = {x: 1, y: 0};
+                    }
+                    break;
+            }
+        }
+
+        // Dino Game
+        let dinoGame, dinoCtx, dinoY, dinoVelocity, gravity, obstacles, dinoScore, dinoRunning;
+        
+        function initDinoGame() {
+            const canvas = document.getElementById('dinoCanvas');
+            dinoCtx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            resetDinoGame();
+            
+            // Event listeners
+            document.getElementById('startDino').addEventListener('click', startDinoGame);
+            document.getElementById('resetDino').addEventListener('click', resetDinoGame);
+            
+            // Jump on space
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && dinoRunning) {
+                    jump();
+                }
+            });
+            
+            // Jump on click/tap
+            canvas.addEventListener('click', () => {
+                if (dinoRunning) {
+                    jump();
+                }
+            });
+        }
+        
+        function startDinoGame() {
+            if (!dinoRunning) {
+                dinoRunning = true;
+                gameLoopDino();
+            }
+        }
+        
+        function resetDinoGame() {
+            dinoY = dinoCtx.canvas.height - 100;
+            dinoVelocity = 0;
+            gravity = 0.5;
+            obstacles = [];
+            dinoScore = 0;
+            dinoRunning = false;
+            document.getElementById('dinoScore').textContent = dinoScore;
+            drawDino();
+        }
+        
+        function gameLoopDino() {
+            if (!dinoRunning) return;
+            
+            updateDino();
+            drawDino();
+            requestAnimationFrame(gameLoopDino);
+        }
+        
+        function updateDino() {
+            // Update dino
+            dinoVelocity += gravity;
+            dinoY += dinoVelocity;
+            
+            // Ground collision
+            if (dinoY > dinoCtx.canvas.height - 100) {
+                dinoY = dinoCtx.canvas.height - 100;
+                dinoVelocity = 0;
+            }
+            
+            // Update obstacles
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].x -= 5;
+                
+                // Check collision
+                if (obstacles[i].x < 50 && obstacles[i].x > 20 && 
+                    dinoY > dinoCtx.canvas.height - 150) {
+                    resetDinoGame();
+                    return;
+                }
+                
+                // Remove off-screen obstacles
+                if (obstacles[i].x < -30) {
+                    obstacles.splice(i, 1);
+                    dinoScore += 10;
+                    document.getElementById('dinoScore').textContent = dinoScore;
+                }
+            }
+            
+            // Add new obstacle randomly
+            if (Math.random() < 0.02) {
+                obstacles.push({
+                    x: dinoCtx.canvas.width,
+                    width: 30,
+                    height: 50
+                });
+            }
+        }
+        
+        function drawDino() {
+            // Clear canvas
+            dinoCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            dinoCtx.fillRect(0, 0, dinoCtx.canvas.width, dinoCtx.canvas.height);
+            
+            // Draw ground
+            dinoCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            dinoCtx.fillRect(0, dinoCtx.canvas.height - 50, dinoCtx.canvas.width, 50);
+            
+            // Draw dino
+            dinoCtx.fillStyle = '#4CAF50';
+            dinoCtx.fillRect(40, dinoY, 40, 50);
+            
+            // Draw obstacles
+            dinoCtx.fillStyle = '#FF5252';
+            obstacles.forEach(obstacle => {
+                dinoCtx.fillRect(obstacle.x, dinoCtx.canvas.height - 50 - obstacle.height, 
+                                obstacle.width, obstacle.height);
+            });
+            
+            // Draw score
+            dinoCtx.fillStyle = 'white';
+            dinoCtx.font = '20px Poppins';
+            dinoCtx.fillText(`Score: ${dinoScore}`, 20, 40);
+        }
+        
+        function jump() {
+            if (dinoY === dinoCtx.canvas.height - 100) {
+                dinoVelocity = -12;
+            }
+        }
+
+        // Memory Game
+        let memoryCards = [], flippedCards = [], matchedCards = [], moves, memoryRunning;
+        const emojis = ['🎮', '👨‍💻', '🎨', '🚀', '💡', '🌟', '⚡', '🎯'];
+        
+        function initMemoryGame() {
+            const board = document.getElementById('memoryBoard');
+            board.innerHTML = '';
+            
+            resetMemoryGame();
+            
+            // Create cards
+            const cards = [...emojis, ...emojis];
+            shuffleArray(cards);
+            
+            cards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.index = index;
+                
+                const front = document.createElement('div');
+                front.className = 'memory-front';
+                front.textContent = emoji;
+                
+                const back = document.createElement('div');
+                back.className = 'memory-back';
+                
+                card.appendChild(front);
+                card.appendChild(back);
+                
+                card.addEventListener('click', () => flipCard(card));
+                board.appendChild(card);
+                
+                memoryCards.push(card);
+            });
+            
+            // Event listeners
+            document.getElementById('startMemory').addEventListener('click', startMemoryGame);
+            document.getElementById('resetMemory').addEventListener('click', initMemoryGame);
+        }
+        
+        function startMemoryGame() {
+            memoryRunning = true;
+            moves = 0;
+            document.getElementById('movesCount').textContent = moves;
+        }
+        
+        function resetMemoryGame() {
+            flippedCards = [];
+            matchedCards = [];
+            memoryCards = [];
+            moves = 0;
+            memoryRunning = false;
+            document.getElementById('movesCount').textContent = moves;
+        }
+        
+        function flipCard(card) {
+            if (!memoryRunning || 
+                flippedCards.length >= 2 || 
+                card.classList.contains('flipped') || 
+                card.classList.contains('matched')) return;
+            
+            card.classList.add('flipped');
+            flippedCards.push(card);
+            
+            if (flippedCards.length === 2) {
+                moves++;
+                document.getElementById('movesCount').textContent = moves;
+                
+                const [card1, card2] = flippedCards;
+                const emoji1 = card1.querySelector('.memory-front').textContent;
+                const emoji2 = card2.querySelector('.memory-front').textContent;
+                
+                if (emoji1 === emoji2) {
+                    // Match found
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    matchedCards.push(card1, card2);
+                    flippedCards = [];
+                    
+                    // Check win condition
+                    if (matchedCards.length === memoryCards.length) {
+                        setTimeout(() => {
+                            alert(`Selamat! Anda menang dengan ${moves} gerakan!`);
+                        }, 500);
+                    }
+                } else {
+                    // No match
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                        flippedCards = [];
+                    }, 1000);
+                }
+            }
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Initialize first game on load
+        window.addEventListener('load', () => {
+            initSnakeGame();
+        });
+    </script>
+</body>
+</html>
